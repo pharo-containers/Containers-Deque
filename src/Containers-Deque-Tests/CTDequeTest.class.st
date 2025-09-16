@@ -62,6 +62,21 @@ CTDequeTest >> testAddLastSingleElement [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testAlternatingOperations [
+
+	deque addFirst: 'a'.
+	self assert: deque removeFirst equals: 'a'.
+	
+	deque addLast: 'b'; addFirst: 'c'.
+	self assert: deque removeLast equals: 'b'.
+	
+	deque addLast: 'd'.
+	self assert: deque first equals: 'c'.
+	self assert: deque last equals: 'd'.
+	self assert: deque size equals: 2
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testCapacityGrowth [
 
 	| originalCapacity |
@@ -73,6 +88,20 @@ CTDequeTest >> testCapacityGrowth [
 	deque addLast: 'overflow'.
 	self assert: deque capacity equals: originalCapacity * 2.
 	self assert: deque size equals: originalCapacity + 1
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testComplexInterleavedOperations [
+
+	deque addFirst: 1; addLast: 2.
+	self assert: deque removeFirst equals: 1.
+	deque addFirst: 3; addLast: 4.
+	self assert: deque removeLast equals: 4.
+	deque addFirst: 5.
+	
+	self assert: deque first equals: 5.
+	self assert: deque last equals: 2.
+	self assert: deque size equals: 3
 ]
 
 { #category : 'tests' }
@@ -135,6 +164,23 @@ CTDequeTest >> testDynamicDeque [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testErrorHandling [
+
+	self should: [ deque removeFirst ] raise: Error.
+	self should: [ deque removeLast ] raise: Error.
+	self should: [ deque first ] raise: Error.
+	self should: [ deque last ] raise: Error.
+	
+	deque addFirst: 'test'.
+	deque removeFirst.
+	
+	self should: [ deque removeFirst ] raise: Error.
+	self should: [ deque removeLast ] raise: Error.
+	self should: [ deque first ] raise: Error.
+	self should: [ deque last ] raise: Error
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testIsEmpty [
 
 	self assert: deque isEmpty
@@ -165,6 +211,18 @@ CTDequeTest >> testMixedRemoveFirstRemoveLast [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testRemoveFirstIfNone [
+
+	| result |
+	result := deque removeFirstIfNone: [ 'fallback' ].
+	self assert: result equals: 'fallback'.
+	
+	deque addFirst: 'test'.
+	result := deque removeFirstIfNone: [ 'fallback' ].
+	self assert: result equals: 'test'
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testRemoveFirstMultipleElements [
 
 	deque addFirst: 'third'; addFirst: 'second'; addFirst: 'first'.
@@ -184,6 +242,18 @@ CTDequeTest >> testRemoveFirstSingleElement [
 	self assert: element equals: 'test'.
 	self assert: deque isEmpty.
 	self assert: deque size equals: 0
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testRemoveLastIfNone [
+
+	| result |
+	result := deque removeLastIfNone: [ 'fallback' ].
+	self assert: result equals: 'fallback'.
+	
+	deque addLast: 'test'.
+	result := deque removeLastIfNone: [ 'fallback' ].
+	self assert: result equals: 'test'
 ]
 
 { #category : 'tests' }

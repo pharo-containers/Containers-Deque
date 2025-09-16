@@ -172,6 +172,15 @@ CTDeque >> removeFirst [
 ]
 
 { #category : 'removing' }
+CTDeque >> removeFirstIfNone: aBlock [
+
+	"Return and remove the front element, or evaluate aBlock if empty."
+	
+	self isEmpty ifTrue: [ ^ aBlock value ].
+	^ self removeFirst
+]
+
+{ #category : 'removing' }
 CTDeque >> removeLast [
 
 	"Return and remove the rear element from the deque.
@@ -186,6 +195,15 @@ CTDeque >> removeLast [
 	size := size - 1.
 	
 	^ element
+]
+
+{ #category : 'removing' }
+CTDeque >> removeLastIfNone: aBlock [
+
+	"Return and remove the rear element, or evaluate aBlock if empty."
+	
+	self isEmpty ifTrue: [ ^ aBlock value ].
+	^ self removeLast
 ]
 
 { #category : 'accessing' }
