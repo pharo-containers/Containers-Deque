@@ -62,6 +62,20 @@ CTDequeTest >> testAddLastSingleElement [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testCapacityGrowth [
+
+	| originalCapacity |
+	originalCapacity := deque capacity.
+	
+	1 to: originalCapacity do: [ :i | deque addLast: i ].
+	self assert: deque capacity equals: originalCapacity.
+	
+	deque addLast: 'overflow'.
+	self assert: deque capacity equals: originalCapacity * 2.
+	self assert: deque size equals: originalCapacity + 1
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testDefaultDequeCreation [
 	
 	| defaultDeque |
@@ -86,6 +100,38 @@ CTDequeTest >> testDequeCreationWithInvalidCapacity [
 
 	self should: [ CTDeque new: -1 ] raise: Error.
 	self should: [ CTDeque new: -10 ] raise: Error
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testDequeCreationWithZeroCapacity [
+
+	| zeroDeque |
+	zeroDeque := CTDeque new: 0.
+	
+	self assert: zeroDeque capacity equals: 0.
+	self assert: zeroDeque isEmpty.
+	self assert: zeroDeque size equals: 0.
+	
+	zeroDeque addFirst: 'first'.
+	self assert: zeroDeque capacity equals: 10.
+	self assert: zeroDeque size equals: 1
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testDynamicDeque [
+
+	| testDeque |
+	testDeque := CTDeque new: 2.
+	testDeque
+		addFirst: 'a';
+		addLast: 'b'.
+	self assert: testDeque capacity equals: 2.
+	"Add one more - should double capacity"
+	testDeque addFirst: 'c'.
+	self assert: testDeque capacity equals: 4.
+	self assert: testDeque size equals: 3.
+	self assert: testDeque first equals: 'c'.
+	self assert: testDeque last equals: 'b'
 ]
 
 { #category : 'tests' }

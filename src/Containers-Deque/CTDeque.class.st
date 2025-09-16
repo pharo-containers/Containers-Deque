@@ -31,10 +31,9 @@ CTDeque class >> new: anInteger [
 
 { #category : 'adding' }
 CTDeque >> addFirst: anElement [
-
 	"Add an element to the front of the deque"
 	
-	self isFull ifTrue: [ self error: 'Deque is full' ].
+	self isFull ifTrue: [ self grow ].
 	
 	frontIndex := self previousIndex: frontIndex.
 	elements at: frontIndex put: anElement.
@@ -45,10 +44,9 @@ CTDeque >> addFirst: anElement [
 
 { #category : 'adding' }
 CTDeque >> addLast: anElement [
-
 	"Add an element to the rear of the deque"
 	
-	self isFull ifTrue: [ self error: 'Deque is full' ].
+	self isFull ifTrue: [ self grow ].
 	
 	elements at: rearIndex put: anElement.
 	rearIndex := self nextIndex: rearIndex.
@@ -73,6 +71,32 @@ CTDeque >> first [
 	
 	self isEmpty ifTrue: [ self error: 'Deque is empty' ].
 	^ elements at: frontIndex
+]
+
+{ #category : 'private' }
+CTDeque >> grow [
+
+	"Double the capacity and reorganize elements to maintain order"
+	| newElements newCapacity |
+	
+	newCapacity := (self capacity = 0 ifTrue: [ 10 ] ifFalse: [ self capacity * 2 ]).
+	newElements := Array new: newCapacity.
+	
+	1 to: size do: [ :i |
+		newElements at: i put: (elements at: (self indexAt: i - 1))
+	].
+	
+	elements := newElements.
+	frontIndex := 1.
+	rearIndex := size + 1.
+]
+
+{ #category : 'private' }
+CTDeque >> indexAt: offset [
+
+	"Return the actual array index for a given offset from front"
+	
+	^ ((frontIndex - 1 + offset) rem: self capacity) + 1
 ]
 
 { #category : 'initialization' }
