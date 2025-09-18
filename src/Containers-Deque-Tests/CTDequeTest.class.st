@@ -18,6 +18,36 @@ CTDequeTest >> setUp [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testAddAllFirst [
+
+	deque addFirst: 'existing'.
+	deque addAllFirst: #('c' 'b' 'a').
+	
+	self assert: deque size equals: 4.
+	self assert: deque first equals: 'a'.
+	self assert: deque last equals: 'existing'
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testAddAllLast [
+deque addLast: 'existing'.
+	deque addAllLast: #('a' 'b' 'c').
+	
+	self assert: deque size equals: 4.
+	self assert: deque first equals: 'existing'.
+	self assert: deque last equals: 'c'
+	
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testAddAllWithEmptyCollection [
+
+	deque addAllFirst: #().
+	deque addAllLast: #().
+	self assert: deque isEmpty
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testAddFirstMultipleElements [
 
 	deque
@@ -74,6 +104,27 @@ CTDequeTest >> testAlternatingOperations [
 	self assert: deque first equals: 'c'.
 	self assert: deque last equals: 'd'.
 	self assert: deque size equals: 2
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testAsArray [
+
+	| result |
+	deque addLast: 'first'; addLast: 'second'; addLast: 'third'.
+	result := deque asArray.
+	
+	self assert: result equals: #('first' 'second' 'third').
+	"Elements from front to rear"
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testAsArrayWithMixedOperations [
+
+	| result |
+	deque addFirst: 'second'; addFirst: 'first'; addLast: 'third'.
+	result := deque asArray.
+	
+	self assert: result equals: #('first' 'second' 'third')
 ]
 
 { #category : 'tests' }
@@ -210,6 +261,22 @@ CTDequeTest >> testMixedRemoveFirstRemoveLast [
 	self assert: deque last equals: 'second'
 ]
 
+{ #category : 'removing' }
+CTDequeTest >> testRemoveAll [
+
+	deque
+		addFirst: 'a';
+		addLast: 'b';
+		addFirst: 'c'.
+	deque removeAll.
+	self assert: deque isEmpty.
+	self assert: deque size equals: 0.
+	deque addFirst: 'd'.
+	self deny: deque isEmpty.
+	self assert: deque size equals: 1.
+	self assert: deque first equals: 'd'
+]
+
 { #category : 'tests' }
 CTDequeTest >> testRemoveFirstIfNone [
 
@@ -282,4 +349,15 @@ CTDequeTest >> testRemoveLastSingleElement [
 CTDequeTest >> testSize [
 
 	self assert: deque size equals: 0
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testWithAllConstructor [
+
+	| testDeque |
+	testDeque := CTDeque withAll: #('a' 'b' 'c').
+	
+	self assert: testDeque size equals: 3.
+	self assert: testDeque first equals: 'a'.
+	self assert: testDeque last equals: 'c'
 ]

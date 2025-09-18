@@ -29,6 +29,34 @@ CTDeque class >> new: anInteger [
 		yourself
 ]
 
+{ #category : 'instance creation' }
+CTDeque class >> withAll: aCollection [
+
+	"Create a new deque with elements from aCollection"
+	| newDeque |
+	newDeque := self new: (aCollection size max: 10).
+	newDeque addAllLast: aCollection.
+	^ newDeque
+]
+
+{ #category : 'adding' }
+CTDeque >> addAllFirst: aCollection [
+
+	"Add all elements from aCollection to the front of the deque (in reverse order)"
+	
+	aCollection do: [ :each | self addFirst: each ].
+	^ self
+]
+
+{ #category : 'adding' }
+CTDeque >> addAllLast: aCollection [
+
+	"Add all elements from aCollection to the rear of the deque"
+	
+	aCollection do: [ :each | self addLast: each ].
+	^ self
+]
+
 { #category : 'adding' }
 CTDeque >> addFirst: anElement [
 	"Add an element to the front of the deque"
@@ -55,12 +83,48 @@ CTDeque >> addLast: anElement [
 	^ self
 ]
 
+{ #category : 'converting' }
+CTDeque >> asArray [
+
+	"Convert deque to array maintaining front-to-rear order"
+	| result |
+	self isEmpty ifTrue: [ ^ #() ].
+	
+	result := Array new: self size.
+	1 to: self size do: [ :i |
+		result at: i put: (elements at: (self indexAt: i - 1))
+	].
+	^ result
+]
+
+{ #category : 'converting' }
+CTDeque >> asOrderedCollection [
+
+	"Convert deque to OrderedCollection maintaining front-to-rear order"
+	| result |
+	result := OrderedCollection new: self size.
+	self do: [ :each | result add: each ].
+	^ result
+]
+
 { #category : 'accessing' }
 CTDeque >> capacity [
 
 	"Return the current capacity of the deque"
 	
 	^ elements size
+]
+
+{ #category : 'enumerating' }
+CTDeque >> do: aBlock [
+
+	"Iterate over elements from front to rear"
+	
+	self isEmpty ifTrue: [ ^ self ].
+	
+	0 to: size - 1 do: [ :offset |
+		aBlock value: (elements at: (self indexAt: offset))
+	]
 ]
 
 { #category : 'accessing' }
@@ -152,6 +216,17 @@ CTDeque >> previousIndex: currentIndex [
 	^ currentIndex = 1
 		ifTrue: [ self capacity ]
 		ifFalse: [ currentIndex - 1 ]
+]
+
+{ #category : 'removing' }
+CTDeque >> removeAll [
+
+	"Remove all elements from the deque"
+	
+	elements := Array new: self capacity.
+	frontIndex := 1.
+	rearIndex := 1.
+	size := 0
 ]
 
 { #category : 'removing' }
