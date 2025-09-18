@@ -115,6 +115,23 @@ CTDeque >> capacity [
 	^ elements size
 ]
 
+{ #category : 'copying' }
+CTDeque >> copy [
+
+	"Create a shallow copy of this deque"
+	| newDeque |
+	newDeque := self class new: self capacity.
+	self do: [ :each | newDeque addLast: each ].
+	^ newDeque
+]
+
+{ #category : 'actions' }
+CTDeque >> dequeue [
+	"Remove and return front element"
+
+	^ self removeFirst
+]
+
 { #category : 'enumerating' }
 CTDeque >> do: aBlock [
 
@@ -128,6 +145,12 @@ CTDeque >> do: aBlock [
 ]
 
 { #category : 'accessing' }
+CTDeque >> enqueue: anElement [
+
+	^ self addLast: anElement
+]
+
+{ #category : 'accessing' }
 CTDeque >> first [
 
 	"Return the front element without removing it.
@@ -135,6 +158,14 @@ CTDeque >> first [
 	
 	self isEmpty ifTrue: [ self error: 'Deque is empty' ].
 	^ elements at: frontIndex
+]
+
+{ #category : 'actions' }
+CTDeque >> front [
+
+	"Return front element without removing"
+	
+	^ self first
 ]
 
 { #category : 'private' }
@@ -153,6 +184,19 @@ CTDeque >> grow [
 	elements := newElements.
 	frontIndex := 1.
 	rearIndex := size + 1.
+]
+
+{ #category : 'testing' }
+CTDeque >> includes: anElement [
+
+	"Return true if anElement exists in the deque"
+	
+	self isEmpty ifTrue: [ ^ false ].
+	
+	0 to: size - 1 do: [ :offset |
+		(elements at: (self indexAt: offset)) = anElement ifTrue: [ ^ true ]
+	].
+	^ false
 ]
 
 { #category : 'private' }
@@ -208,6 +252,13 @@ CTDeque >> nextIndex: currentIndex [
 		ifFalse: [ currentIndex + 1 ]
 ]
 
+{ #category : 'removing' }
+CTDeque >> pop [
+	"Remove and return front element"
+
+	^ self removeFirst
+]
+
 { #category : 'private' }
 CTDeque >> previousIndex: currentIndex [
 
@@ -216,6 +267,14 @@ CTDeque >> previousIndex: currentIndex [
 	^ currentIndex = 1
 		ifTrue: [ self capacity ]
 		ifFalse: [ currentIndex - 1 ]
+]
+
+{ #category : 'adding' }
+CTDeque >> push: anElement [
+
+	"Add element to front (stack-like interface)"
+	
+	^ self addFirst: anElement
 ]
 
 { #category : 'removing' }
@@ -281,10 +340,47 @@ CTDeque >> removeLastIfNone: aBlock [
 	^ self removeLast
 ]
 
+{ #category : 'enumerating' }
+CTDeque >> reverseDo: aBlock [
+
+	"Iterate over elements from rear to front"
+	
+	self isEmpty ifTrue: [ ^ self ].
+	
+	size - 1 to: 0 by: -1 do: [ :offset |
+		aBlock value: (elements at: (self indexAt: offset))
+	]
+]
+
+{ #category : 'accessing' }
+CTDeque >> search: anObject [
+
+	"Return the 1-based position of anObject from the front of the deque.
+	Return -1 if the object is not found.
+	The front element is at position 1."
+	
+	self isEmpty ifTrue: [ ^ -1 ].
+	
+	0 to: size - 1 do: [ :offset |
+		(elements at: (self indexAt: offset)) = anObject ifTrue: [ 
+			^ offset + 1 
+		]
+	].
+	^ -1
+]
+
 { #category : 'accessing' }
 CTDeque >> size [
 
 	"Return the number of elements in the deque"
 	
 	^ size
+]
+
+{ #category : 'accessing' }
+CTDeque >> top [
+
+	"Return front element without removing"
+	
+	^ self first
 ]

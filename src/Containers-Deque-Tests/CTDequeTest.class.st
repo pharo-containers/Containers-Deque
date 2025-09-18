@@ -156,6 +156,47 @@ CTDequeTest >> testComplexInterleavedOperations [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testCopyCreatesNewObject [
+
+	| copy |
+	deque
+		addFirst: 'a';
+		addLast: 'b'.
+	copy := deque copy.
+	self deny: deque identicalTo: copy
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testCopyHasSameContents [
+
+	| copy |
+	deque
+		addFirst: 'first';
+		addLast: 'second';
+		addFirst: 'third'.
+	copy := deque copy.
+	self assert: copy size equals: deque size.
+	self assert: copy first equals: deque first.
+	self assert: copy last equals: deque last
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testCopyIsIndependent [
+
+	| copy |
+	deque addFirst: 'a'; addLast: 'b'.
+	copy := deque copy.
+	"Now, modify the original deque"
+	deque removeFirst.
+	deque addLast: 'c'.
+	
+	self assert: copy size equals: 2.
+	self assert: copy first equals: 'a'.
+	self assert: copy last equals: 'b'.
+	self deny: copy first equals: deque first
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testDefaultDequeCreation [
 	
 	| defaultDeque |
@@ -232,6 +273,15 @@ CTDequeTest >> testErrorHandling [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testIncludes [
+
+	deque addLast: 5; addFirst: 10; addLast: 15.
+	self assert: (deque includes: 10).
+	self deny: (deque includes: 20).
+	self assert: deque size equals: 3. "includes: should not modify the deque"
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testIsEmpty [
 
 	self assert: deque isEmpty
@@ -259,6 +309,19 @@ CTDequeTest >> testMixedRemoveFirstRemoveLast [
 	self assert: deque size equals: 1.
 	self assert: deque first equals: 'second'.
 	self assert: deque last equals: 'second'
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testQueueInterface [
+
+	"Test queue-like operations"
+	deque enqueue: 'first'; enqueue: 'second'; enqueue: 'third'.
+	
+	self assert: deque front equals: 'first'.
+	self assert: deque dequeue equals: 'first'.
+	self assert: deque dequeue equals: 'second'.
+	self assert: deque size equals: 1.
+	self assert: deque front equals: 'third'
 ]
 
 { #category : 'removing' }
@@ -346,9 +409,40 @@ CTDequeTest >> testRemoveLastSingleElement [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testSearchExistingElement [
+
+	deque addLast: 'a'; addLast: 'b'; addLast: 'c'; addLast: 'b'.
+	
+	self assert: (deque search: 'a') equals: 1. "First element"
+	self assert: (deque search: 'b') equals: 2. "First occurrence"
+	self assert: (deque search: 'c') equals: 3
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testSearchNonExistentElement [
+
+	deque addLast: 'a'; addLast: 'b'; addLast: 'c'.
+	
+	self assert: (deque search: 'x') equals: -1
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testSize [
 
 	self assert: deque size equals: 0
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testStackInterface [
+
+	"Test stack-like operations"
+	deque push: 'first'; push: 'second'; push: 'third'.
+	
+	self assert: deque top equals: 'third'.
+	self assert: deque pop equals: 'third'.
+	self assert: deque pop equals: 'second'.
+	self assert: deque size equals: 1.
+	self assert: deque top equals: 'first'
 ]
 
 { #category : 'tests' }
