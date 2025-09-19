@@ -1,5 +1,11 @@
 "
 I implement a double-ended queue (Deque) that grows dynamically as needed using a circular array.
+- #addFirst: adds a new object to the front of the deque.
+- #addLast: adds a new object to the rear of the deque.
+- #removeFirst returns and removes the front element from the deque.
+- #removeLast returns and removes the rear element from the deque.
+- #first answers the front element without removing it.
+- #last answers the rear element without removing it.
 "
 Class {
 	#name : 'CTDeque',
