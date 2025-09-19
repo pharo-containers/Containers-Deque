@@ -1,5 +1,8 @@
 "
 I provide a comprehensive suite of unit tests for the CTDeque class.
+My tests cover double-ended operations, front/rear access, error handling, state management,
+capacity growth, constructors, bulk operations, stack/queue interfaces, and various edge cases 
+to ensure the implementation is robust, correct, and performant.
 "
 Class {
 	#name : 'CTDequeTest',
@@ -60,6 +63,16 @@ CTDequeTest >> testAddFirstMultipleElements [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testAddFirstNilElement [
+
+	deque addFirst: nil.
+	self assert: deque size equals: 1.
+	self assert: deque first isNil.
+	self assert: deque removeFirst isNil.
+	self assert: deque isEmpty
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testAddFirstSingleElement [
 
 	deque addFirst: 'first'.
@@ -79,6 +92,16 @@ CTDequeTest >> testAddLastMultipleElements [
 	self assert: deque first equals: 'first'.
 	self assert: deque last equals: 'third'.
 	self deny: deque isEmpty
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testAddLastNilElement [
+
+	deque addLast: nil.
+	self assert: deque size equals: 1.
+	self assert: deque last isNil.
+	self assert: deque removeLast isNil.
+	self assert: deque isEmpty
 ]
 
 { #category : 'tests' }
@@ -128,6 +151,17 @@ CTDequeTest >> testAsArrayWithMixedOperations [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testAsOrderedCollection [
+
+	| result |
+	deque addLast: 'a'; addFirst: 'b'; addLast: 'c'.
+	result := deque asOrderedCollection.
+	
+	self assert: result class equals: OrderedCollection.
+	self assert: result asArray equals: #('b' 'a' 'c')
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testCapacityGrowth [
 
 	| originalCapacity |
@@ -139,6 +173,47 @@ CTDequeTest >> testCapacityGrowth [
 	deque addLast: 'overflow'.
 	self assert: deque capacity equals: originalCapacity * 2.
 	self assert: deque size equals: originalCapacity + 1
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testCircularArrayBidirectionalWrapping [
+
+	| testDeque |
+	testDeque := CTDeque new: 4.
+	
+	"Add from both ends"
+	testDeque addFirst: 2; addLast: 3; addFirst: 1; addLast: 4.
+	
+	"Remove from both ends"
+	self assert: testDeque removeFirst equals: 1.
+	self assert: testDeque removeLast equals: 4.
+	
+	"Add more to test complex wraparound"
+	testDeque addFirst: 0; addLast: 5.
+	
+	self assert: testDeque first equals: 0.
+	self assert: testDeque last equals: 5.
+	self assert: testDeque size equals: 4
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testCircularArrayWrapping [
+
+	| testDeque |
+	testDeque := CTDeque new: 3.
+	
+	"Fill from rear"
+	testDeque addLast: 1; addLast: 2; addLast: 3.
+	
+	"Remove from front"
+	testDeque removeFirst; removeFirst.
+	
+	"Add from front to test wraparound"
+	testDeque addFirst: 4; addFirst: 5.
+	
+	self assert: testDeque first equals: 5.
+	self assert: testDeque last equals: 3.
+	self assert: testDeque size equals: 3
 ]
 
 { #category : 'tests' }
@@ -273,6 +348,18 @@ CTDequeTest >> testErrorHandling [
 ]
 
 { #category : 'tests' }
+CTDequeTest >> testFirstLastWithoutRemoving [
+
+	deque addFirst: 'first'; addLast: 'last'.
+	
+	self assert: deque first equals: 'first'.
+	self assert: deque last equals: 'last'.
+	self assert: deque size equals: 2.
+	self assert: deque first equals: 'first'. "Still there"
+	self assert: deque last equals: 'last'. "Still there"
+]
+
+{ #category : 'tests' }
 CTDequeTest >> testIncludes [
 
 	deque addLast: 5; addFirst: 10; addLast: 15.
@@ -338,6 +425,15 @@ CTDequeTest >> testRemoveAll [
 	self deny: deque isEmpty.
 	self assert: deque size equals: 1.
 	self assert: deque first equals: 'd'
+]
+
+{ #category : 'tests' }
+CTDequeTest >> testRemoveAllOnEmptyDeque [
+
+	deque removeAll.
+	
+	self assert: deque isEmpty.
+	self assert: deque size equals: 0
 ]
 
 { #category : 'tests' }
