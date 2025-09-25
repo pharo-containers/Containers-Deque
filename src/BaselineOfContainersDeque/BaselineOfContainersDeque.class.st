@@ -1,6 +1,6 @@
 Class {
 	#name : 'BaselineOfContainersDeque',
-	#superclass : 'Object',
+	#superclass : 'BaselineOf',
 	#category : 'BaselineOfContainersDeque',
 	#package : 'BaselineOfContainersDeque'
 }
