@@ -46,6 +46,12 @@ CTDeque class >> withAll: aCollection [
 ]
 
 { #category : 'adding' }
+CTDeque >> add: anElement [
+
+    ^ self addLast: anElement
+]
+
+{ #category : 'adding' }
 CTDeque >> addAllFirst: aCollection [
 
 	"Add all elements from aCollection to the front of the deque (in reverse order)"
